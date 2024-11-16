@@ -41,18 +41,29 @@ public_users.get("/", async function (req, res) {
   }
 });
 
-// Get book details based on ISBN
-public_users.get("/isbn/:isbn", function (req, res) {
-  const { isbn } = req.params;
-
-  const book = booksArr.find((book) => book.isbn === isbn);
-
-  if (book) {
-    return res.status(200).send(JSON.stringify(book, null, 2));
-  }
-
-  return res.status(404).send(`Book with isbn "${isbn}" not found.`);
-});
+const getBookByIsbn = (isbn) => {
+    return new Promise((resolve, reject) => {
+      const book = booksArr.find((book) => book.isbn === isbn);
+  
+      if (!book) {
+        return reject(new Error(`Book with ISBN "${isbn}" not found.`));
+      }
+  
+      resolve(book);
+    });
+  };
+  
+  // Get book details based on ISBN
+  public_users.get("/isbn/:isbn", async function (req, res) {
+    const { isbn } = req.params;
+  
+    try {
+      const book = await getBookByIsbn(isbn);
+      return res.status(200).send(JSON.stringify(book, null, 2));
+    } catch (error) {
+      return res.status(404).send(error.message);
+    }
+  });
 
 // Get book details based on author
 public_users.get("/author/:author", function (req, res) {
@@ -63,7 +74,6 @@ public_users.get("/author/:author", function (req, res) {
   if (book) {
     return res.status(200).send(JSON.stringify(book, null, 2));
   }
-
   return res.status(404).send(`Book with author "${author}" not found.`);
 });
 
