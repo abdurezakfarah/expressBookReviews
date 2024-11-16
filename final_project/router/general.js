@@ -88,18 +88,29 @@ const getBookByIsbn = (isbn) => {
     }
   });
   
-// Get all books based on title
-public_users.get("/title/:title", function (req, res) {
-  const { title } = req.params;
-
-  const book = booksArr.find((book) => book.title === title);
-
-  if (book) {
-    return res.status(200).send(JSON.stringify(book, null, 2));
-  }
-
-  return res.status(404).send(`Book with title "${title}" not found.`);
-});
+  const getBooksByTitle = (title) => {
+    return new Promise((resolve, reject) => {
+      const booksByTitle = booksArr.filter((book) => book.title === title);
+  
+      if (booksByTitle.length === 0) {
+        return reject(new Error(`No books found with the title "${title}".`));
+      }
+  
+      resolve(booksByTitle);
+    });
+  };
+  
+  // Get all books based on title
+  public_users.get("/title/:title", async function (req, res) {
+    const { title } = req.params;
+  
+    try {
+      const books = await getBooksByTitle(title);
+      return res.status(200).send(JSON.stringify(books, null, 2));
+    } catch (error) {
+      return res.status(404).send(error.message);
+    }
+  });
 
 //  Get book review
 public_users.get("/review/:isbn", function (req, res) {
