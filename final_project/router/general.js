@@ -32,21 +32,28 @@ public_users.get("/isbn/:isbn", function (req, res) {
 
 // Get book details based on author
 public_users.get("/author/:author", function (req, res) {
-    const { author } = req.params;
+  const { author } = req.params;
 
-    const book = booksArr.find((book) => book.author === author);
-  
-    if (book) {
-      return res.status(200).send(JSON.stringify(book, null, 2));
-    }
-    
-    return res.status(404).send(`Book with author "${author}" not found.`);
+  const book = booksArr.find((book) => book.author === author);
+
+  if (book) {
+    return res.status(200).send(JSON.stringify(book, null, 2));
+  }
+
+  return res.status(404).send(`Book with author "${author}" not found.`);
 });
 
 // Get all books based on title
 public_users.get("/title/:title", function (req, res) {
-  //Write your code here
-  return res.status(300).json({ message: "Yet to be implemented" });
+  const { title } = req.params;
+
+  const book = booksArr.find((book) => book.title === title);
+
+  if (book) {
+    return res.status(200).send(JSON.stringify(book, null, 2));
+  }
+
+  return res.status(404).send(`Book with title "${title}" not found.`);
 });
 
 //  Get book review
